@@ -5,7 +5,9 @@ services:
     ports:
       - "6969:6969"
     volumes:
-      - ./index:/index
-      - ./log:/log
+      - grpcox_logs:/log
     env_file:
       - config.env
+
+volumes:
+  grpcox_logs:

@@ -170,7 +170,7 @@ func (h *Handler) describeFunction(w http.ResponseWriter, r *http.Request) {
 	// get param
 	result, _, err := res.Describe(funcName)
 	if err != nil {
-		writeError(w, err)
+		writeError(w, fmt.Errorf("res.Describe(%v) failed: %w", funcName, err))
 		return
 	}
 	match := reGetFuncArg.FindStringSubmatch(result)
@@ -230,8 +230,8 @@ func (h *Handler) invokeFunction(w http.ResponseWriter, r *http.Request) {
 	var metadataStr string
 	for i, m := range metadataArr {
 		i += 1
-		if isEven := i % 2 == 0; isEven {
-			metadataStr = metadataStr+m
+		if isEven := i%2 == 0; isEven {
+			metadataStr = metadataStr + m
 			metadata = append(metadata, metadataStr)
 			metadataStr = ""
 			continue

@@ -179,7 +179,10 @@ func (r *Resource) Describe(symbol string) (string, string, error) {
 			// for messages, also show a template in JSON, to make it easier to
 			// create a request to invoke an RPC
 			tmpl := grpcurl.MakeTemplate(dsc)
-			_, formatter, err := grpcurl.RequestParserAndFormatterFor(grpcurl.Format("json"), r.descSource, true, false, nil)
+			_, formatter, err := grpcurl.RequestParserAndFormatter(grpcurl.Format("text"), r.descSource, nil, grpcurl.FormatOptions{
+				EmitJSONDefaultFields: true,
+				IncludeTextSeparator:  true,
+			})
 			if err != nil {
 				return "", "", err
 			}
@@ -204,11 +207,17 @@ func (r *Resource) Invoke(ctx context.Context, metadata []string, symbol string,
 
 	var resultBuffer bytes.Buffer
 
-	rf, formatter, err := grpcurl.RequestParserAndFormatterFor(grpcurl.Format("json"), r.descSource, false, true, in)
+	rf, formatter, err := grpcurl.RequestParserAndFormatter(grpcurl.Format("text"), r.descSource, in, grpcurl.FormatOptions{
+		EmitJSONDefaultFields: false,
+		IncludeTextSeparator:  true,
+	})
 	if err != nil {
-		return "", 0, err
+		return "", 0, fmt.Errorf("grpcurl.REquestParserAndFormatterFor: %w", err)
 	}
-	h := grpcurl.NewDefaultEventHandler(&resultBuffer, r.descSource, formatter, false)
+	h := &grpcurl.DefaultEventHandler{
+		Formatter: formatter,
+		Out:       &resultBuffer,
+	}
 
 	var headers = r.headers
 	if len(metadata) != 0 {

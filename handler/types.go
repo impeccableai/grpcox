@@ -8,14 +8,9 @@ import (
 )
 
 var (
-	reGetFuncArg *regexp.Regexp
-	indexHTML    *template.Template
-)
-
-func init() {
 	reGetFuncArg = regexp.MustCompile("\\( (.*) \\) returns")
-	indexHTML = template.Must(template.New("index.html").Delims("{[", "]}").ParseFiles("index/index.html"))
-}
+	indexHTML    = template.Must(template.New("index.html").Delims("{[", "]}").ParseFiles("index/index.html"))
+)
 
 // Response - Standar ajax Response
 type Response struct {

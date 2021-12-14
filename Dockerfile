@@ -1,12 +1,14 @@
-FROM golang:1.13-alpine AS builder
+FROM golang:1.17-alpine AS builder
 
-ENV GO111MODULE=on
-
-#WORKDIR /go/src/github.com/gusaul/grpcox
 WORKDIR /src
 
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
 COPY . ./
-RUN go mod tidy && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o grpcox grpcox.go
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o grpcox grpcox.go
 
 
 FROM alpine
